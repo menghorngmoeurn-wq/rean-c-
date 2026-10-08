@@ -1,0 +1,17 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+int main(){
+system("chcp 65001");
+system("cls");
+cout << "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄" << endl;
+cout << "         what           " << endl;
+cout << "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄" << endl;
+cout <<                            << endl;
+cout <<                            << endl;
+
+    return 0;
+}
+

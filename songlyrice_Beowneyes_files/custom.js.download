@@ -1,0 +1,94 @@
+jQuery(document).ready(function () {
+    var searchBox = $('.y2mate_query.keyword, .input-control.keyword');
+  
+    searchBox.on('paste', function () {
+      $('.spinner').show();
+      setTimeout(function () {
+        var inputValue = searchBox.val();
+        if (isYouTubeURL(inputValue)) {
+          $('.convert-btn, .start-btn').click();
+        }
+      }, 100);
+    });  
+    function isYouTubeURL(url) {
+      return url.includes("youtube.com") || url.includes("youtu.be") || url.includes("www.youtube.com");
+    }
+  
+    $(document).on("click", function (event) {
+      if ($(event.target).closest(".navbar-toggler").length) {
+        $(".header-menu").toggleClass("collapse");
+      } else if (!$(event.target).closest(".header-menu").length) {
+        $(".header-menu").removeClass("collapse");
+      }
+    });
+    $(document).on("click", function (event) {
+      if ($(event.target).closest(".language").length) {
+        $(".dropdown-menu").toggleClass("open");
+      } else if (!$(event.target).closest(".dropdown-menu").length) {
+        $(".dropdown-menu").removeClass("open");
+      }
+    });
+    $(".keyword").keyup(function (e) {
+      var inputlength = $(this).val().length;
+      var code = (e.keyCode || e.which);
+      if (code == 37 || code == 38 || code == 39 || code == 40) {
+        var index = $('.selected').index();
+        if (!index || index === -1) { index = 0; }
+        $('.result_box li').removeClass('selected');
+        switch (code) {
+          case 38:   //up arrow key
+            var new_index = index - 1;
+            $('.result_box li').eq(new_index).addClass('selected');
+            var new_query = $('.result_box li.selected').html();
+            $(this).val(new_query);
+            break;
+          case 40:    //bottom arrow key
+            var new_index = index + 1;
+            $('.result_box li').eq(new_index).addClass('selected');
+            var new_query = $('.result_box li.selected').html();
+            $(this).val(new_query);
+            break;
+        }
+      } else if (code == 13) {
+        $(".suggesstion-box").hide();
+      } else {
+        var search_txt = '';
+        jQuery.ajax({
+          type: "POST",
+          url: "https://suggestqueries.google.com/complete/search?hl=en&ds=yt&client=youtube&hjson=t&cp=1",
+          dataType: 'jsonp',
+          data: $.extend({ q: $(this).val(), }, {}),
+          success: function (data) {
+            $(".suggesstion-box").html('');
+            $(".suggesstion-box").show();
+            obj = data[1];
+            if (obj[0]) { search_txt = "<ul class='result_box'>"; }
+            jQuery.each(obj, function (key, value) {
+              search_txt = search_txt + "<li class='search_result'>" + value[0] + "</li>";
+            });
+            if (obj[0]) { search_txt = search_txt + "</ul"; }
+            $(".suggesstion-box").append(search_txt);
+          }
+        });
+      }
+    });
+    $(document).mouseup(function (e) {
+      if ($(e.target).closest(".suggesstion-box").length === 0) {
+        $(".suggesstion-box").hide();
+      }
+    });
+    jQuery(document).on('click', 'ul.result_box li', function () {
+      var valattr = $(this).text();
+      $('.keyword').val(valattr);
+      $(".suggesstion-box").hide();
+      $('.converter-btn').click();
+      $('.convert-btn').click();
+    });
+    $(document).on('mouseenter', '.search_result', function (event) {
+      $('.result_box li').removeClass('selected');
+      $(this).addClass('selected');
+      var new_query = $('.result_box li.selected').text();
+      $('.keyword').val(new_query);
+    });
+  
+  });

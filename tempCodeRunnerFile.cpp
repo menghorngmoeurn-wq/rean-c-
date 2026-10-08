@@ -1,0 +1,1 @@
+g++ msg.cpp -lwinmm -o a;
